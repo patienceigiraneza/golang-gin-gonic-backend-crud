@@ -1,17 +1,25 @@
 package initializers
 
 import (
-    "gorm.io/gorm"
-    "gorm.io/driver/postgres"
-    "fmt"
-    "log"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var DB *gorm.DB // Export the DB variable
+var DB *gorm.DB
 
 func ConnectToDb() (*gorm.DB, error) {
-    // postgres://drijhxnt:Cd8gvEzVvXLRq4zUIJFaDa0oNWiy4zy8@flora.db.elephantsql.com/drijhxnt
-    dsn := "host=flora.db.elephantsql.com user=drijhxnt password=Cd8gvEzVvXLRq4zUIJFaDa0oNWiy4zy8 dbname=drijhxnt port=5432 sslmode=disable TimeZone=Africa/Cairo"
+
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatalf("Error loading .env file: %v", err)
+    }
+
+    dsn := os.Getenv("DB_DSN")
     db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
     if err != nil {
@@ -20,7 +28,7 @@ func ConnectToDb() (*gorm.DB, error) {
         fmt.Println("Connected")
     }
 
-    DB = db // Set the DB variable to the connected database
+    DB = db
 
     return db, err
 }
